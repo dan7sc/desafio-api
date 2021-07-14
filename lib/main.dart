@@ -34,12 +34,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late Future<List<Post>> posts;
 
-  void _getData() {
-    setState(() {
-      posts = getPosts();
-    });
-  }
-
   Future<List<Post>> getPosts() async {
     final baseURL = "http://jsonplaceholder.typicode.com";
     var url = Uri.parse(
@@ -70,27 +64,25 @@ class _MyHomePageState extends State<MyHomePage> {
         child: FutureBuilder<List<Post>>(
           future: posts,
           builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: snapshot.data!.map((Post post) => ListTile(
-                  title: Text("${post.id} ${post.title}"),
-                ),
-              ).toList(),
+            if (snapshot.hasData) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: snapshot.data!
+                    .map(
+                      (Post post) => ListTile(
+                        title: Text("${post.id} - ${post.title}"),
+                      ),
+                    )
+                    .toList(),
+              );
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+            return Center(
+              child: CircularProgressIndicator(),
             );
-          } else if(snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      ),
-    ),
-    floatingActionButton: FloatingActionButton(
-        onPressed: _getData,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+          },
+        ),
       ),
     );
   }
